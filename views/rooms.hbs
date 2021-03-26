@@ -1,0 +1,34 @@
+<a href="/logout">Logout</a>
+<h2>ROOMS</h2>
+{{#if message}}
+  <div>
+    {{message}}
+  </div>
+{{/if}}
+<form method="POST" action="/room/add">
+  <input name="roomName" placeholder="Insert Room Name">
+  <button type="submit">Add Room</button>
+</form>
+{{#if hasRooms}}
+  <table>
+    <thead>
+      <tr>
+        <td>Room ID</td>
+        <td>Room Name</td>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rooms}}
+        <tr>
+          <td>{{ this.id }} {{#if this.newRoom}}NEW!{{/if}}</td>
+          <td>{{ this.name }}</td>
+          <td>
+            <a href="/room/delete/{{this.id}}">Delete Room</a>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{else}}
+  <h5>There are no rooms in the system.</h5>
+{{/if}}
