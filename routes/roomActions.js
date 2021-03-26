@@ -1,9 +1,13 @@
 const { Router } = require('express');
 const request = require('request');
 const { directory } = require('../config/api.json');
+const { decryptKey } = require('../tools/encrypt');
+const log = require('../tools/log');
 const router = Router();
 
 router.post('/add', (req, res) => {
+  const { username } = decryptKey(req.cookies['AuthToken']);
+
   if (!req.body.roomName) {
     req.session.message = 'Room Name is required.';
     res.redirect('/');
@@ -21,6 +25,7 @@ router.post('/add', (req, res) => {
       }
     }, (error, response, body) => {
       if (error) {
+        log('POST /add', 'request', username, error);
         req.session.message = 'There is a problem with your request. Please try again.';
         res.redirect('/');
       } else if (response.statusCode === 200) {
@@ -28,6 +33,7 @@ router.post('/add', (req, res) => {
         req.session.newRoom = body.roomId;
         res.redirect('/');
       } else {
+        log('POST /add', 'request', username, request);
         req.session.message = 'There is a problem with your request. Please try again.';
         res.redirect('/');
       }
@@ -36,6 +42,7 @@ router.post('/add', (req, res) => {
 });
 
 router.get('/delete/:id', (req, res) => {
+  const { username } = decryptKey(req.cookies['AuthToken']);
   const id = req.params.id;
 
   request({
@@ -46,6 +53,7 @@ router.get('/delete/:id', (req, res) => {
     }
   }, (error, response, body) => {
     if (error) {
+      log('GET /delete', 'request', username, error);
       req.session.message = 'There is a problem deleted the room. Please try again.';
       res.redirect('/');
     } else if (response.statusCode === 200) {
@@ -55,6 +63,7 @@ router.get('/delete/:id', (req, res) => {
       req.session.message = 'The reservation you are trying to cancel does not exist.';
       res.redirect('/');
     } else {
+      log('GET /delete', 'request', username, response);
       req.session.message = 'There is a problem deleted the room. Please try again.';
       res.redirect('/');
     }

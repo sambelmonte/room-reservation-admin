@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const request = require('request');
 const { directory } = require('../config/api.json');
+const log = require('../tools/log');
 const router = Router();
 
 router.post('/', (req, res) => {
@@ -28,6 +29,7 @@ router.post('/', (req, res) => {
       }
     }, (error, response, body) => {
       if (error) {
+        log('POST /login', 'request', req.body.username, error);
         res.render('home', {
           message: 'There is a problem with your request. Please try again.'
         });
@@ -39,6 +41,7 @@ router.post('/', (req, res) => {
           message: 'Wrong username and/or password.'
         });
       } else {
+        log('POST /login', 'request', req.body.username, response);
         res.render('home', {
           message: 'There is a problem with your request. Please try again.'
         });
